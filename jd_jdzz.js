@@ -40,8 +40,8 @@ if ($.isNode()) {
 }
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
 const inviteCodes = [
- `AX2QI2PzOmnZQUT2ngTkV@AAzZWmKSRzjcIZ2H62H5IkQz4iQ@AUWE54cr5k0ZecB2BnBkz@AUWE5mq7FmWZdCDTx1C9JlQ@AUWE5mviVmzEIDmn823obwQ@AUWE5m_uZnDEIXWLxiC5Lkg@ATHYK1_XVlA@AWGQJxfTBhWxWCw`,
- `AX2QI2PzOmnZQUT2ngTkV@AAzZWmKSRzjcIZ2H62H5IkQz4iQ@AUWE54cr5k0ZecB2BnBkz@AUWE5mq7FmWZdCDTx1C9JlQ@AUWE5mviVmzEIDmn823obwQ@AUWE5m_uZnDEIXWLxiC5Lkg@ATHYK1_XVlA@AWGQJxfTBhWxWCw`,
+ `S5rQgG0tQ91fVJQ@S5rQgG0tQ`,
+ `S5rQgG0tQ@S5rQgG0tQ91fVJQ`,
 ]
 let nowTimes = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000);
 !(async () => {
