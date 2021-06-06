@@ -34,8 +34,8 @@ let applyJdBean = 50000; //疯狂的JOY京豆兑换，目前最小值为2000京�
 let cookiesArr = [], cookie = '', message = '';
 const inviteCodes =
  [
-  ''tl83ZyOeeXoSukCWrD40VA==@U253mfwcsvg=,
-  ''U253mfwcsvg=@tl83ZyOeeXoSukCWrD40VA==,
+  'tl83ZyOeeXoSukCWrD40VA==@U253mfwcsvg=',
+  'U253mfwcsvg=@tl83ZyOeeXoSukCWrD40VA==',
 ];
 const randomCount = 0 ;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
