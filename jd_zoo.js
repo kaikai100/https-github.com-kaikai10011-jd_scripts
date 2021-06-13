@@ -768,7 +768,7 @@ function zoo_pk_getHomeData(inviteId = "",timeout = 0) {
             data = JSON.parse(data);
             if (showCode) {
               console.log('您的队伍助力码：' + data.data.result.groupInfo.groupAssistInviteId);
-              showCode = false;
+              showCode = true;
             }
             if (!doPkSkill) return ;
             if (typeof data.data.result.groupPkInfo.dayTotalValue !== "undefined") {
