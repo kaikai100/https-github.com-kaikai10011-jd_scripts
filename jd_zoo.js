@@ -581,6 +581,121 @@ function qryViewkitCallbackResult(taskBody,timeout = 0) {
     },timeout)
   })
 }
+    //===================================图鉴里的店铺====================================================================
+    if (new Date().getHours()>= 17 && new Date().getHours()<= 18 && !$.hotFlag) {//分享
+      $.myMapList = [];
+      await takePostRequest('zoo_myMap');
+      for (let i = 0; i < $.myMapList.length; i++) {
+        await $.wait(3000);
+        $.currentScence = i + 1;
+        if ($.myMapList[i].isFirstShare === 1) {
+          console.log(`去分享${$.myMapList[i].partyName}`);
+          await takePostRequest('zoo_getWelfareScore');
+        }
+      }
+    }
+    if (new Date().getHours() >= 14 && new Date().getHours() <= 17 && !$.hotFlag){//30个店铺，为了避免代码执行太久，下午2点到5点才做店铺任务
+      console.log(`去做店铺任务`);
+      $.shopInfoList = [];
+      await takePostRequest('qryCompositeMaterials');
+      for (let i = 0; i < $.shopInfoList.length; i++) {
+        $.shopSign = $.shopInfoList[i].extension.shopId;
+        console.log(`执行第${i+1}个店铺任务：${$.shopInfoList[i].name} ID:${$.shopSign}`);
+        $.shopResult = {};
+        await takePostRequest('zoo_shopLotteryInfo');
+        await $.wait(1000);
+        if(JSON.stringify($.shopResult) === `{}`) continue;
+        $.shopTask = $.shopResult.taskVos;
+        for (let i = 0; i < $.shopTask.length; i++) {
+          $.oneTask = $.shopTask[i];
+          //console.log($.oneTask);
+          if($.oneTask.taskType === 21 || $.oneTask.taskType === 14 || $.oneTask.status !== 1){continue;} //不做入会//不做邀请
+          $.activityInfoList = $.oneTask.shoppingActivityVos || $.oneTask.simpleRecordInfoVo;
+          if($.oneTask.taskType === 12){//签到
+            if($.shopResult.dayFirst === 0){
+              $.oneActivityInfo =  $.activityInfoList;
+              console.log(`店铺签到`);
+              await takePostRequest('zoo_bdCollectScore');
+            }
+            continue;
+          }
+          for (let j = 0; j < $.activityInfoList.length; j++) {
+            $.oneActivityInfo = $.activityInfoList[j];
+            if ($.oneActivityInfo.status !== 1 || !$.oneActivityInfo.taskToken) {
+              continue;
+            }
+            $.callbackInfo = {};
+            console.log(`做任务：${$.oneActivityInfo.subtitle || $.oneActivityInfo.title || $.oneActivityInfo.taskName || $.oneActivityInfo.shopName};等待完成`);
+            await takePostRequest('zoo_collectScore');
+            if ($.callbackInfo.code === 0 && $.callbackInfo.data && $.callbackInfo.data.result && $.callbackInfo.data.result.taskToken) {
+              await $.wait(8000);
+              let sendInfo = encodeURIComponent(`{"dataSource":"newshortAward","method":"getTaskAward","reqParams":"{\\"taskToken\\":\\"${$.callbackInfo.data.result.taskToken}\\"}","sdkVersion":"1.0.0","clientLanguage":"zh"}`)
+              await callbackResult(sendInfo)
+            } else  {
+              await $.wait(2000);
+              console.log(`任务完成`);
+            }
+          }
+        }
+        await $.wait(1000);
+        let boxLotteryNum = $.shopResult.boxLotteryNum;
+        for (let j = 0; j < boxLotteryNum; j++) {
+          console.log(`开始第${j+1}次拆盒`)
+          //抽奖
+          await takePostRequest('zoo_boxShopLottery');
+          await $.wait(3000);
+        }
+        // let wishLotteryNum = $.shopResult.wishLotteryNum;
+        // for (let j = 0; j < wishLotteryNum; j++) {
+        //   console.log(`开始第${j+1}次能量抽奖`)
+        //   //抽奖
+        //   await takePostRequest('zoo_wishShopLottery');
+        //   await $.wait(3000);
+        // }
+        await $.wait(3000);
+      }
+    }
+    //==================================微信任务========================================================================
+      $.wxTaskList = [];
+      if (!$.hotFlag) await takePostRequest('wxTaskDetail');
+      for (let i = 0; i < $.wxTaskList.length; i++) {
+        $.oneTask = $.wxTaskList[i];
+        if ($.oneTask.taskType === 2 || $.oneTask.status !== 1) { continue; } //不做加购
+        $.activityInfoList = $.oneTask.shoppingActivityVos || $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.browseShopVo;
+        for (let j = 0; j < $.activityInfoList.length; j++) {
+          $.oneActivityInfo = $.activityInfoList[j];
+          if ($.oneActivityInfo.status !== 1 || !$.oneActivityInfo.taskToken) {
+            continue;
+          }
+          $.callbackInfo = {};
+          console.log(`做任务：${$.oneActivityInfo.title || $.oneActivityInfo.taskName || $.oneActivityInfo.shopName};等待完成`);
+          await takePostRequest('zoo_collectScore');
+          if ($.callbackInfo.code === 0 && $.callbackInfo.data && $.callbackInfo.data.result && $.callbackInfo.data.result.taskToken) {
+            await $.wait(8000);
+            let sendInfo = encodeURIComponent(`{"dataSource":"newshortAward","method":"getTaskAward","reqParams":"{\\"taskToken\\":\\"${$.callbackInfo.data.result.taskToken}\\"}","sdkVersion":"1.0.0","clientLanguage":"zh"}`)
+            await callbackResult(sendInfo)
+          } else {
+            await $.wait(2000);
+            console.log(`任务完成`);
+          }
+        }
+      }
+    //=======================================================京东金融=================================================================================
+      $.jdjrTaskList = [];
+      if (!$.hotFlag) await takePostRequest('jdjrTaskDetail');
+      await $.wait(1000);
+      for (let i = 0; i < $.jdjrTaskList.length; i++) {
+        $.taskId = $.jdjrTaskList[i].id;
+        if ($.taskId === '3980' || $.taskId === '3981' || $.taskId === '3982') continue;
+        if ($.jdjrTaskList[i].status === '1' || $.jdjrTaskList[i].status === '3') {
+          console.log(`去做任务：${$.jdjrTaskList[i].name}`);
+          await takePostRequest('jdjrAcceptTask');
+          await $.wait(8000);
+          await takeGetRequest();
+        } else if ($.jdjrTaskList[i].status === '2') {
+          console.log(`任务：${$.jdjrTaskList[i].name},已完成`);
+        }
+      }
 
 //群组助力
 function zoo_pk_assistGroup(inviteId = "",timeout = 0) {
@@ -615,7 +730,6 @@ function zoo_pk_assistGroup(inviteId = "",timeout = 0) {
     },timeout)
   })
 }
-
 //获取首页信息
 function zoo_getHomeData(inviteId= "",timeout = 0) {
   return new Promise((resolve) => {
