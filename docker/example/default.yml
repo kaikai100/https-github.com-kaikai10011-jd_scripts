@@ -24,11 +24,11 @@ jd_scripts:
     #jd cookies
     # 例: JD_COOKIE=pt_key=XXX;pt_pin=XXX;
     # 例（多账号）: JD_COOKIE=pt_key=XXX;pt_pin=XXX;&pt_key=XXX;pt_pin=XXX;&pt_key=XXX;pt_pin=XXX;
-    - JD_COOKIE=pt_key=AAJgslWzADDHZq-DR5f_J7mszWqX-eujGsrQTPBnvMIHONlqCqcomgSe3O37Ra_FFe-Y0DkIHqY;pt_pin=jd_4978e67c8ecf9;
+    - JD_COOKIE=pt_key=xxxx;pt_pin=xxx;
     #微信server酱通知
     - PUSH_KEY=
     #Bark App通知
-    - BARK_PUSH=pkR2AadmiNBTumeVZZ4EUX
+    - BARK_PUSH=
     #telegram机器人通知
     - TG_BOT_TOKEN=
     - TG_USER_ID=
